@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Teacher Copilot — Plan less, teach more</title>
+<meta name="description" content="Generate lesson plans, quizzes, rubrics, differentiation, and parent messages in minutes.">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Newsreader:wght@400;500;600&display=swap');
+
+  :root {
+    --ink: #1a1d29; --ink-soft: #4a4f5e; --paper: #f4f1ea; --card: #fffdf8;
+    --line: #ddd6c8; --accent: #c2410c; --accent-soft: #fff1e9; --teal: #0f5e5e;
+    --shadow: 0 1px 2px rgba(26,29,41,.04), 0 8px 28px rgba(26,29,41,.08);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Newsreader', Georgia, serif; background: var(--paper); color: var(--ink);
+    line-height: 1.6; min-height: 100vh;
+    background-image: radial-gradient(circle at 12% 20%, rgba(194,65,12,.04), transparent 40%),
+      radial-gradient(circle at 88% 75%, rgba(15,94,94,.04), transparent 40%);
+  }
+  .wrap { max-width: 920px; margin: 0 auto; padding: 48px 24px 80px; }
+  header { margin-bottom: 36px; border-bottom: 2px solid var(--ink); padding-bottom: 24px; }
+  .badge {
+    display: inline-block; font-family: 'Fraunces', serif; font-size: 11px; letter-spacing: .18em;
+    text-transform: uppercase; color: var(--accent); border: 1px solid var(--accent);
+    border-radius: 100px; padding: 4px 12px; margin-bottom: 16px;
+  }
+  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: clamp(34px, 6vw, 52px); line-height: 1.05; letter-spacing: -.02em; }
+  h1 em { font-style: italic; color: var(--accent); }
+  .sub { font-size: 18px; color: var(--ink-soft); margin-top: 12px; max-width: 580px; }
+  .tabs { display: flex; gap: 4px; margin: 32px 0 28px; flex-wrap: wrap; }
+  .tab {
+    font-family: 'Fraunces', serif; font-size: 14px; font-weight: 500; padding: 8px 16px;
+    border: 1px solid var(--line); background: var(--card); border-radius: 100px; cursor: pointer;
+    transition: all .18s ease; color: var(--ink-soft);
+  }
+  .tab:hover { border-color: var(--ink); color: var(--ink); }
+  .tab.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .panel { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 28px; box-shadow: var(--shadow); }
+  .field { margin-bottom: 20px; }
+  label {
+    display: block; font-family: 'Fraunces', serif; font-size: 13px; font-weight: 600;
+    letter-spacing: .04em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 8px;
+  }
+  input, select, textarea {
+    width: 100%; font-family: 'Newsreader', serif; font-size: 16px; padding: 11px 14px;
+    border: 1px solid var(--line); border-radius: 9px; background: #fff; color: var(--ink); transition: border-color .15s;
+  }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  textarea { resize: vertical; min-height: 70px; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 560px) { .row { grid-template-columns: 1fr; } }
+  .go {
+    font-family: 'Fraunces', serif; font-size: 16px; font-weight: 600; background: var(--accent);
+    color: #fff; border: none; border-radius: 9px; padding: 13px 28px; cursor: pointer; margin-top: 4px;
+    transition: transform .12s, background .15s;
+  }
+  .go:hover { background: #9a330a; transform: translateY(-1px); }
+  .out {
+    margin-top: 28px; background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+    padding: 32px; box-shadow: var(--shadow); display: none;
+  }
+  .out.show { display: block; animation: rise .4s ease; }
+  @keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  .out h2 { font-family: 'Fraunces', serif; font-size: 26px; font-weight: 600; margin-bottom: 4px; }
+  .out h3 {
+    font-family: 'Fraunces', serif; font-size: 16px; font-weight: 600; color: var(--teal);
+    margin: 22px 0 8px; letter-spacing: .02em; border-bottom: 1px solid var(--line); padding-bottom: 6px;
+  }
+  .out p, .out li, .out td, .out th { font-size: 16px; color: var(--ink); }
+  .out ul, .out ol { margin: 6px 0 6px 22px; }
+  .out li { margin-bottom: 5px; }
+  .meta { color: var(--ink-soft); font-size: 14px; font-style: italic; margin-bottom: 8px; }
+  .out table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+  .out th, .out td { border: 1px solid var(--line); padding: 8px 10px; text-align: left; vertical-align: top; }
+  .out th { background: var(--accent-soft); font-family: 'Fraunces', serif; font-size: 13px; }
+  .out [contenteditable]:focus { outline: 2px solid var(--accent-soft); border-radius: 4px; }
+  .editnote { font-size: 13px; color: var(--ink-soft); font-style: italic; margin-bottom: 14px; }
+  .actions { margin-top: 20px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .btn2 {
+    font-family: 'Fraunces', serif; font-size: 13px; font-weight: 500; background: transparent;
+    border: 1px solid var(--line); color: var(--ink-soft); border-radius: 7px; padding: 7px 16px; cursor: pointer;
+  }
+  .btn2:hover { border-color: var(--ink); color: var(--ink); }
+  footer { margin-top: 48px; text-align: center; color: var(--ink-soft); font-size: 13px; font-style: italic; }
+  @media print {
+    body { background: #fff; } .wrap { padding: 0; max-width: 100%; }
+    header, .tabs, .panel, footer, .actions { display: none !important; }
+    .out { box-shadow: none; border: none; margin: 0; padding: 0; display: block !important; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="badge">AI Teacher Copilot · v1</span>
+    <h1>Plan less. <em>Teach more.</em></h1>
+    <p class="sub">Generate ready-to-use lesson plans, quizzes, rubrics, differentiation, and parent messages — in minutes. Built by a teacher, for teachers.</p>
+  </header>
+
+  <div class="tabs">
+    <button class="tab active" data-mode="lesson">Lesson Plan</button>
+    <button class="tab" data-mode="quiz">Quiz</button>
+    <button class="tab" data-mode="rubric">Rubric</button>
+    <button class="tab" data-mode="differentiation">Differentiation</button>
+    <button class="tab" data-mode="parent">Parent Message</button>
+  </div>
+
+  <div class="panel">
+    <div class="field">
+      <label id="topicLabel">Topic / Learning Focus</label>
+      <input id="topic" placeholder="e.g. Forces and motion">
+    </div>
+    <div class="row">
+      <div class="field">
+        <label>Year Group</label>
+        <select id="year">
+          <option>Year 4</option><option>Year 5</option><option>Year 6</option>
+          <option selected>Year 7</option><option>Year 8</option><option>Year 9</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Subject</label>
+        <select id="subject">
+          <option selected>Science</option><option>STEM / Engineering</option>
+          <option>Mathematics</option><option>English</option><option>Other</option>
+        </select>
+      </div>
+    </div>
+    <div class="field">
+      <label id="extraLabel">Lesson length / notes (optional)</label>
+      <input id="extra" placeholder="e.g. 50 minutes, mixed ability">
+    </div>
+    <button class="go" id="go">Generate</button>
+  </div>
+
+  <div class="out" id="out"></div>
+
+  <footer>Built by Dickens Okoth · A working v1 — content is fully editable before you use it</footer>
+</div>
+
+<script>
+  let mode = 'lesson';
+  const labels = {
+    lesson: { topic: 'Topic / Learning Focus', extra: 'Lesson length / notes (optional)', ph: 'e.g. Forces and motion' },
+    quiz: { topic: 'Quiz Topic', extra: 'Notes (optional)', ph: 'e.g. The water cycle' },
+    rubric: { topic: 'Task being assessed', extra: 'Total marks (optional)', ph: 'e.g. Design-and-build project' },
+    differentiation: { topic: 'Lesson / activity', extra: 'Notes (optional)', ph: 'e.g. Investigating photosynthesis' },
+    parent: { topic: 'Subject of message', extra: 'Student first name (optional)', ph: 'e.g. Strong improvement this term' }
+  };
+  document.querySelectorAll('.tab').forEach(t => {
+    t.onclick = () => {
+      document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+      t.classList.add('active'); mode = t.dataset.mode;
+      document.getElementById('topicLabel').textContent = labels[mode].topic;
+      document.getElementById('extraLabel').textContent = labels[mode].extra;
+      document.getElementById('topic').placeholder = labels[mode].ph;
+    };
+  });
+
+  function gen(mode, t, y, s, e) {
+    const len = e || '50 minutes';
+    if (mode === 'lesson') return `
+      <h3>Learning Objectives</h3><ul>
+        <li>Understand the key concepts of <b>${t}</b> appropriate to ${y}.</li>
+        <li>Apply ${t} to a practical, real-world ${s} context.</li>
+        <li>Communicate findings and reasoning clearly.</li></ul>
+      <h3>Success Criteria</h3><ul>
+        <li>I can define and explain ${t} in my own words.</li>
+        <li>I can give an example and justify it.</li>
+        <li>I can connect ${t} to a wider idea or application.</li></ul>
+      <h3>Starter / Hook (5 min)</h3><p>Pose a provocative question or quick demonstration about ${t}. Ask students to predict an outcome and share with a partner (think–pair–share).</p>
+      <h3>Main Activity (${len})</h3><ol>
+        <li><b>Explore:</b> Introduce ${t} with a short input and a guiding question.</li>
+        <li><b>Investigate:</b> Students work in pairs/groups on a hands-on or applied task linked to ${t}.</li>
+        <li><b>Apply (Engineering Design Process):</b> Ask · Imagine · Plan · Create · Improve — students design or solve a problem using ${t}.</li>
+        <li><b>Share:</b> Groups present one finding and one question that remains.</li></ol>
+      <h3>Plenary</h3><p>Exit ticket: each student writes one thing they learned about ${t} and one question they still have.</p>
+      <h3>Key Vocabulary</h3><p>List 4–6 key terms for ${t} — define together at the start, revisit at the end.</p>
+      <h3>Resources Needed</h3><ul><li>Worksheet / handout on ${t}</li><li>Group materials for the investigation</li><li>Display question for the starter</li></ul>`;
+    if (mode === 'quiz') return `
+      <h3>Questions</h3><ol>
+        <li>Define ${t} in one sentence. <i>(1 mark)</i></li>
+        <li>Which of the following best describes ${t}? A / B / C / D <i>(1 mark)</i></li>
+        <li>Give one real-world example of ${t} and explain it. <i>(2 marks)</i></li>
+        <li>Describe what would happen if [a key variable in ${t}] changed. <i>(2 marks)</i></li>
+        <li>Compare ${t} with a related idea. State one similarity and one difference. <i>(2 marks)</i></li>
+        <li>Apply ${t} to solve this short problem: [insert scenario]. <i>(3 marks)</i></li></ol>
+      <h3>Answer Key</h3><p>Add model answers and the mark scheme here before printing. Total: 11 marks. Adjust difficulty for ${y}.</p>`;
+    if (mode === 'rubric') {
+      const marks = e || '40';
+      return `<h3>Rubric — ${t} (${marks} marks)</h3>
+      <table><tr><th>Criterion</th><th>Emerging (1)</th><th>Developing (2)</th><th>Secure (3)</th><th>Mastery (4)</th></tr>
+      <tr><th>Understanding</th><td>Limited grasp of ${t}.</td><td>Basic grasp with gaps.</td><td>Clear, accurate grasp.</td><td>Deep, transferable grasp.</td></tr>
+      <tr><th>Application</th><td>Struggles to apply.</td><td>Applies with support.</td><td>Applies independently.</td><td>Applies in novel contexts.</td></tr>
+      <tr><th>Process / Method</th><td>Unstructured.</td><td>Some structure.</td><td>Logical and clear.</td><td>Efficient and reflective.</td></tr>
+      <tr><th>Communication</th><td>Unclear.</td><td>Partly clear.</td><td>Clear and organised.</td><td>Precise and compelling.</td></tr></table>
+      <p class="meta">How to use: score each criterion 1–4, weight as needed, give one "what went well" and one "next step" comment.</p>`;
+    }
+    if (mode === 'differentiation') return `
+      <h3>Support — EAL learners</h3><ul><li>Pre-teach key vocabulary for ${t} with visuals.</li><li>Provide sentence starters and a word bank.</li><li>Allow partner discussion before writing.</li></ul>
+      <h3>Support — SEN / scaffolded</h3><ul><li>Break the ${t} task into smaller steps with a checklist.</li><li>Offer a partly-completed worked example.</li><li>Reduce the number of items, keep the cognitive challenge.</li></ul>
+      <h3>Stretch — high-ability</h3><ul><li>Add an open-ended extension question on ${t}.</li><li>Ask them to design their own problem and solution.</li><li>Introduce a real-world constraint or trade-off to analyse.</li></ul>
+      <h3>For all</h3><ul><li>Offer choice in how students show understanding (diagram, write-up, verbal).</li><li>Use mini-plenaries to check progress.</li></ul>`;
+    if (mode === 'parent') {
+      const name = e || 'your child';
+      return `<h3>Draft message</h3>
+      <p>Dear Parent/Guardian,</p>
+      <p>I wanted to share a quick update regarding ${name} in ${s}. ${t}.</p>
+      <p>In class, ${name} has been engaging with our current work, and I'm pleased to keep you informed of their progress. To build on this, a helpful next step at home would be a short, supportive conversation about what they are enjoying and finding tricky.</p>
+      <p>Please do reach out if you'd like to discuss anything further — I'm always happy to talk.</p>
+      <p>Kind regards,<br>Mr Okoth<br>${s} Teacher</p>`;
+    }
+  }
+
+  document.getElementById('go').onclick = () => {
+    const topic = document.getElementById('topic').value.trim();
+    if (!topic) { document.getElementById('topic').focus(); return; }
+    const year = document.getElementById('year').value;
+    const subject = document.getElementById('subject').value;
+    const extra = document.getElementById('extra').value.trim();
+    const out = document.getElementById('out');
+    const titles = { lesson: 'Lesson Plan', quiz: 'Quiz', rubric: 'Rubric', differentiation: 'Differentiation Plan', parent: 'Parent Message' };
+    out.className = 'out show';
+    out.innerHTML = `<h2>${titles[mode]}</h2><p class="meta">${topic} · ${year} · ${subject}</p>
+      <p class="editnote">✎ Tip: click any text below to edit it before you copy or print.</p>
+      <div contenteditable="true" id="editable">${gen(mode, topic, year, subject, extra)}</div>
+      <div class="actions">
+        <button class="btn2" id="copyBtn">Copy text</button>
+        <button class="btn2" onclick="window.print()">Print / Save as PDF</button>
+      </div>`;
+    document.getElementById('copyBtn').onclick = () => {
+      navigator.clipboard.writeText(document.getElementById('editable').innerText);
+      document.getElementById('copyBtn').textContent = 'Copied ✓';
+      setTimeout(() => document.getElementById('copyBtn').textContent = 'Copy text', 1500);
+    };
+    out.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+</script>
+</body>
+</html>
