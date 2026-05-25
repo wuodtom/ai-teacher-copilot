@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AI Teacher Copilot — Plan less, teach more</title>
-<meta name="description" content="Generate lesson plans, quizzes, rubrics, differentiation, and parent messages in minutes.">
+<meta name="description" content="Generate lesson plans, quizzes, rubrics, differentiation, and parent messages in minutes. Cambridge & IB MYP aligned.">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Newsreader:wght@400;500;600&display=swap');
 
@@ -21,7 +21,7 @@
       radial-gradient(circle at 88% 75%, rgba(15,94,94,.04), transparent 40%);
   }
   .wrap { max-width: 920px; margin: 0 auto; padding: 48px 24px 80px; }
-  header { margin-bottom: 36px; border-bottom: 2px solid var(--ink); padding-bottom: 24px; }
+  header { margin-bottom: 30px; border-bottom: 2px solid var(--ink); padding-bottom: 24px; }
   .badge {
     display: inline-block; font-family: 'Fraunces', serif; font-size: 11px; letter-spacing: .18em;
     text-transform: uppercase; color: var(--accent); border: 1px solid var(--accent);
@@ -30,7 +30,17 @@
   h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: clamp(34px, 6vw, 52px); line-height: 1.05; letter-spacing: -.02em; }
   h1 em { font-style: italic; color: var(--accent); }
   .sub { font-size: 18px; color: var(--ink-soft); margin-top: 12px; max-width: 580px; }
-  .tabs { display: flex; gap: 4px; margin: 32px 0 28px; flex-wrap: wrap; }
+
+  .framework { display: flex; align-items: center; gap: 12px; margin: 24px 0 4px; flex-wrap: wrap; }
+  .framework .flabel { font-family: 'Fraunces', serif; font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft); }
+  .seg { display: inline-flex; border: 1px solid var(--ink); border-radius: 100px; overflow: hidden; }
+  .seg button {
+    font-family: 'Fraunces', serif; font-size: 13px; font-weight: 500; padding: 7px 18px;
+    border: none; background: var(--card); color: var(--ink-soft); cursor: pointer; transition: all .15s;
+  }
+  .seg button.on { background: var(--teal); color: #fff; }
+
+  .tabs { display: flex; gap: 4px; margin: 24px 0 28px; flex-wrap: wrap; }
   .tab {
     font-family: 'Fraunces', serif; font-size: 14px; font-weight: 500; padding: 8px 16px;
     border: 1px solid var(--line); background: var(--card); border-radius: 100px; cursor: pointer;
@@ -49,7 +59,6 @@
     border: 1px solid var(--line); border-radius: 9px; background: #fff; color: var(--ink); transition: border-color .15s;
   }
   input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
-  textarea { resize: vertical; min-height: 70px; }
   .row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   @media (max-width: 560px) { .row { grid-template-columns: 1fr; } }
   .go {
@@ -73,10 +82,10 @@
   .out ul, .out ol { margin: 6px 0 6px 22px; }
   .out li { margin-bottom: 5px; }
   .meta { color: var(--ink-soft); font-size: 14px; font-style: italic; margin-bottom: 8px; }
+  .fwtag { display:inline-block; font-family:'Fraunces',serif; font-size:11px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:#fff; background:var(--teal); border-radius:100px; padding:2px 10px; margin-left:6px; vertical-align:middle; }
   .out table { width: 100%; border-collapse: collapse; margin: 10px 0; }
   .out th, .out td { border: 1px solid var(--line); padding: 8px 10px; text-align: left; vertical-align: top; }
   .out th { background: var(--accent-soft); font-family: 'Fraunces', serif; font-size: 13px; }
-  .out [contenteditable]:focus { outline: 2px solid var(--accent-soft); border-radius: 4px; }
   .editnote { font-size: 13px; color: var(--ink-soft); font-style: italic; margin-bottom: 14px; }
   .actions { margin-top: 20px; display: flex; gap: 8px; flex-wrap: wrap; }
   .btn2 {
@@ -87,7 +96,7 @@
   footer { margin-top: 48px; text-align: center; color: var(--ink-soft); font-size: 13px; font-style: italic; }
   @media print {
     body { background: #fff; } .wrap { padding: 0; max-width: 100%; }
-    header, .tabs, .panel, footer, .actions { display: none !important; }
+    header, .tabs, .panel, footer, .actions, .framework { display: none !important; }
     .out { box-shadow: none; border: none; margin: 0; padding: 0; display: block !important; }
   }
 </style>
@@ -97,7 +106,14 @@
   <header>
     <span class="badge">AI Teacher Copilot · v1</span>
     <h1>Plan less. <em>Teach more.</em></h1>
-    <p class="sub">Generate ready-to-use lesson plans, quizzes, rubrics, differentiation, and parent messages — in minutes. Built by a teacher, for teachers.</p>
+    <p class="sub">Ready-to-use lesson plans, quizzes, rubrics, differentiation, and parent messages — aligned to your curriculum, in minutes.</p>
+    <div class="framework">
+      <span class="flabel">Curriculum framework</span>
+      <div class="seg" id="seg">
+        <button class="on" data-fw="cambridge">Cambridge</button>
+        <button data-fw="myp">IB MYP</button>
+      </div>
+    </div>
   </header>
 
   <div class="tabs">
@@ -115,11 +131,8 @@
     </div>
     <div class="row">
       <div class="field">
-        <label>Year Group</label>
-        <select id="year">
-          <option>Year 4</option><option>Year 5</option><option>Year 6</option>
-          <option selected>Year 7</option><option>Year 8</option><option>Year 9</option>
-        </select>
+        <label id="yearLabel">Year Group</label>
+        <select id="year"></select>
       </div>
       <div class="field">
         <label>Subject</label>
@@ -138,11 +151,23 @@
 
   <div class="out" id="out"></div>
 
-  <footer>Built by Dickens Okoth · A working v1 — content is fully editable before you use it</footer>
+  <footer>Built by Dickens Okoth · A working v1 — every output is fully editable before you use it</footer>
 </div>
 
 <script>
   let mode = 'lesson';
+  let fw = 'cambridge';
+
+  const yearSets = {
+    cambridge: ['Year 4','Year 5','Year 6','Year 7','Year 8','Year 9'],
+    myp: ['MYP 1 (Yr 7)','MYP 2 (Yr 8)','MYP 3 (Yr 9)','MYP 4 (Yr 10)','MYP 5 (Yr 11)']
+  };
+  function fillYears() {
+    const sel = document.getElementById('year');
+    sel.innerHTML = yearSets[fw].map((y,i) => `<option ${i===3&&fw==='cambridge'?'selected':''} ${i===0&&fw==='myp'?'selected':''}>${y}</option>`).join('');
+  }
+  fillYears();
+
   const labels = {
     lesson: { topic: 'Topic / Learning Focus', extra: 'Lesson length / notes (optional)', ph: 'e.g. Forces and motion' },
     quiz: { topic: 'Quiz Topic', extra: 'Notes (optional)', ph: 'e.g. The water cycle' },
@@ -150,6 +175,14 @@
     differentiation: { topic: 'Lesson / activity', extra: 'Notes (optional)', ph: 'e.g. Investigating photosynthesis' },
     parent: { topic: 'Subject of message', extra: 'Student first name (optional)', ph: 'e.g. Strong improvement this term' }
   };
+
+  document.getElementById('seg').querySelectorAll('button').forEach(b => {
+    b.onclick = () => {
+      document.getElementById('seg').querySelectorAll('button').forEach(x => x.classList.remove('on'));
+      b.classList.add('on'); fw = b.dataset.fw; fillYears();
+      document.getElementById('yearLabel').textContent = fw === 'myp' ? 'MYP Year' : 'Year Group';
+    };
+  });
   document.querySelectorAll('.tab').forEach(t => {
     t.onclick = () => {
       document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
@@ -160,60 +193,131 @@
     };
   });
 
-  function gen(mode, t, y, s, e) {
-    const len = e || '50 minutes';
-    if (mode === 'lesson') return `
-      <h3>Learning Objectives</h3><ul>
-        <li>Understand the key concepts of <b>${t}</b> appropriate to ${y}.</li>
-        <li>Apply ${t} to a practical, real-world ${s} context.</li>
-        <li>Communicate findings and reasoning clearly.</li></ul>
+  // ---------- CAMBRIDGE TEMPLATES ----------
+  const cambridge = {
+    lesson: (t,y,s,e) => `
+      <h3>Learning Objectives <span class="fwtag">Cambridge</span></h3>
+      <p>By the end of this lesson, learners will be able to:</p><ul>
+        <li><b>State / describe</b> the key features of ${t}.</li>
+        <li><b>Explain</b> how and why ${t} works, using correct ${s} terminology.</li>
+        <li><b>Apply / analyse</b> ${t} in an unfamiliar context.</li></ul>
       <h3>Success Criteria</h3><ul>
-        <li>I can define and explain ${t} in my own words.</li>
-        <li>I can give an example and justify it.</li>
-        <li>I can connect ${t} to a wider idea or application.</li></ul>
-      <h3>Starter / Hook (5 min)</h3><p>Pose a provocative question or quick demonstration about ${t}. Ask students to predict an outcome and share with a partner (think–pair–share).</p>
-      <h3>Main Activity (${len})</h3><ol>
-        <li><b>Explore:</b> Introduce ${t} with a short input and a guiding question.</li>
-        <li><b>Investigate:</b> Students work in pairs/groups on a hands-on or applied task linked to ${t}.</li>
-        <li><b>Apply (Engineering Design Process):</b> Ask · Imagine · Plan · Create · Improve — students design or solve a problem using ${t}.</li>
-        <li><b>Share:</b> Groups present one finding and one question that remains.</li></ol>
-      <h3>Plenary</h3><p>Exit ticket: each student writes one thing they learned about ${t} and one question they still have.</p>
-      <h3>Key Vocabulary</h3><p>List 4–6 key terms for ${t} — define together at the start, revisit at the end.</p>
-      <h3>Resources Needed</h3><ul><li>Worksheet / handout on ${t}</li><li>Group materials for the investigation</li><li>Display question for the starter</li></ul>`;
-    if (mode === 'quiz') return `
-      <h3>Questions</h3><ol>
-        <li>Define ${t} in one sentence. <i>(1 mark)</i></li>
-        <li>Which of the following best describes ${t}? A / B / C / D <i>(1 mark)</i></li>
-        <li>Give one real-world example of ${t} and explain it. <i>(2 marks)</i></li>
-        <li>Describe what would happen if [a key variable in ${t}] changed. <i>(2 marks)</i></li>
-        <li>Compare ${t} with a related idea. State one similarity and one difference. <i>(2 marks)</i></li>
-        <li>Apply ${t} to solve this short problem: [insert scenario]. <i>(3 marks)</i></li></ol>
-      <h3>Answer Key</h3><p>Add model answers and the mark scheme here before printing. Total: 11 marks. Adjust difficulty for ${y}.</p>`;
-    if (mode === 'rubric') {
-      const marks = e || '40';
-      return `<h3>Rubric — ${t} (${marks} marks)</h3>
-      <table><tr><th>Criterion</th><th>Emerging (1)</th><th>Developing (2)</th><th>Secure (3)</th><th>Mastery (4)</th></tr>
-      <tr><th>Understanding</th><td>Limited grasp of ${t}.</td><td>Basic grasp with gaps.</td><td>Clear, accurate grasp.</td><td>Deep, transferable grasp.</td></tr>
-      <tr><th>Application</th><td>Struggles to apply.</td><td>Applies with support.</td><td>Applies independently.</td><td>Applies in novel contexts.</td></tr>
-      <tr><th>Process / Method</th><td>Unstructured.</td><td>Some structure.</td><td>Logical and clear.</td><td>Efficient and reflective.</td></tr>
-      <tr><th>Communication</th><td>Unclear.</td><td>Partly clear.</td><td>Clear and organised.</td><td>Precise and compelling.</td></tr></table>
-      <p class="meta">How to use: score each criterion 1–4, weight as needed, give one "what went well" and one "next step" comment.</p>`;
-    }
-    if (mode === 'differentiation') return `
-      <h3>Support — EAL learners</h3><ul><li>Pre-teach key vocabulary for ${t} with visuals.</li><li>Provide sentence starters and a word bank.</li><li>Allow partner discussion before writing.</li></ul>
-      <h3>Support — SEN / scaffolded</h3><ul><li>Break the ${t} task into smaller steps with a checklist.</li><li>Offer a partly-completed worked example.</li><li>Reduce the number of items, keep the cognitive challenge.</li></ul>
-      <h3>Stretch — high-ability</h3><ul><li>Add an open-ended extension question on ${t}.</li><li>Ask them to design their own problem and solution.</li><li>Introduce a real-world constraint or trade-off to analyse.</li></ul>
-      <h3>For all</h3><ul><li>Offer choice in how students show understanding (diagram, write-up, verbal).</li><li>Use mini-plenaries to check progress.</li></ul>`;
-    if (mode === 'parent') {
-      const name = e || 'your child';
-      return `<h3>Draft message</h3>
+        <li>I can <b>define</b> ${t} accurately.</li>
+        <li>I can <b>explain</b> it using subject-specific vocabulary.</li>
+        <li>I can <b>apply</b> it to a new problem and justify my reasoning.</li></ul>
+      <h3>Starter / Retrieval (5 min)</h3><p>Low-stakes retrieval question linking prior learning to ${t}. Pose a Cambridge-style command-word question ("<i>Describe…</i>", "<i>Suggest…</i>") and take quick responses.</p>
+      <h3>Main Activity (${e||'40 min'})</h3><ol>
+        <li><b>Teacher input:</b> model the core idea of ${t} with a worked example and clear use of command words.</li>
+        <li><b>Guided practice:</b> learners attempt a scaffolded task; check for misconceptions.</li>
+        <li><b>Independent / applied task:</b> learners tackle an exam-style question on ${t} (Engineering Design Process: Ask · Imagine · Plan · Create · Improve where practical).</li>
+        <li><b>Feedback:</b> peer- or self-mark against the success criteria.</li></ol>
+      <h3>Plenary (5 min)</h3><p>Exit ticket using a Cambridge command word: "<i>Explain one way ${t} is used in real life.</i>" Identify any misconception to revisit next lesson.</p>
+      <h3>Key Vocabulary</h3><p>4–6 tier-3 terms for ${t}. Pre-teach, display, and require their use in answers.</p>
+      <h3>Assessment & Next Steps</h3><p>Links to Cambridge Lower Secondary ${s} framework. Note progress toward Checkpoint-style questioning; flag learners for stretch or support next lesson.</p>
+      <h3>Resources</h3><ul><li>Command-word display</li><li>Scaffolded + exam-style worksheet on ${t}</li><li>Equipment for the applied task</li></ul>`,
+    quiz: (t,y,s,e) => `
+      <h3>${t} — Progress Check <span class="fwtag">Cambridge</span></h3>
+      <p class="meta">Command-word questions, ramped by demand. ${y}.</p>
+      <h3>Section A — Recall & Understanding</h3><ol>
+        <li><b>State</b> what is meant by ${t}. <i>(1)</i></li>
+        <li><b>Describe</b> one key feature of ${t}. <i>(2)</i></li>
+        <li><b>Identify</b> the correct option about ${t}: A / B / C / D. <i>(1)</i></li></ol>
+      <h3>Section B — Application</h3><ol start="4">
+        <li><b>Explain</b> why ${t} behaves as it does. <i>(3)</i></li>
+        <li><b>Suggest</b> what would happen if a key variable changed. <i>(2)</i></li></ol>
+      <h3>Section C — Analysis</h3><ol start="6">
+        <li><b>Compare</b> ${t} with a related idea — one similarity, one difference. <i>(2)</i></li>
+        <li><b>Apply</b> ${t} to this scenario: [insert]. Show your reasoning. <i>(4)</i></li></ol>
+      <h3>Mark Scheme</h3><p>Add model points here. Total: 15 marks. Use Cambridge command-word criteria (state = recall; explain = reasoned cause; suggest = applied prediction).</p>`,
+    rubric: (t,y,s,e) => {
+      const m = e || '20';
+      return `<h3>Assessment Rubric — ${t} <span class="fwtag">Cambridge</span></h3>
+      <p class="meta">Aligned to Cambridge assessment objectives · ${m} marks · ${y}</p>
+      <table>
+      <tr><th>Assessment Objective</th><th>Beginning</th><th>Developing</th><th>Secure</th><th>Excelling</th></tr>
+      <tr><th>AO1 Knowledge & Understanding</th><td>Recalls little.</td><td>Some accurate recall.</td><td>Accurate, relevant knowledge.</td><td>Thorough, precise knowledge.</td></tr>
+      <tr><th>AO2 Application</th><td>Rarely applies.</td><td>Applies with support.</td><td>Applies independently.</td><td>Applies fluently to unfamiliar contexts.</td></tr>
+      <tr><th>AO3 Analysis & Evaluation</th><td>Describes only.</td><td>Begins to analyse.</td><td>Analyses with evidence.</td><td>Evaluates and justifies conclusions.</td></tr>
+      <tr><th>Communication</th><td>Unclear; little vocabulary.</td><td>Some subject vocabulary.</td><td>Clear, correct vocabulary.</td><td>Precise, well-structured.</td></tr></table>
+      <p class="meta">How to use: judge each AO, convert to marks out of ${m}, give one strength and one Cambridge-style improvement target.</p>`;
+    },
+    differentiation: (t,y,s,e) => `
+      <h3>Differentiation Plan — ${t} <span class="fwtag">Cambridge</span></h3>
+      <h3>Support — EAL learners</h3><ul><li>Pre-teach command words and tier-3 vocabulary for ${t} with visuals.</li><li>Provide sentence stems matched to command words ("This happens because…").</li><li>Allow oral rehearsal before written answers.</li></ul>
+      <h3>Support — SEN / scaffolded</h3><ul><li>Chunk the ${t} task with a step checklist.</li><li>Give a partially worked exam-style example.</li><li>Reduce volume, keep the demand (still target AO2/AO3).</li></ul>
+      <h3>Stretch — greater depth</h3><ul><li>Raise the command word (from <i>describe</i> to <i>evaluate</i>) on ${t}.</li><li>Add an unfamiliar-context application question.</li><li>Ask learners to write and mark their own exam question.</li></ul>
+      <h3>For all</h3><ul><li>Share success criteria up front.</li><li>Use mini-whiteboards for live misconception checks.</li></ul>`,
+    parent: (t,y,s,e) => { const n = e || 'your child';
+      return `<h3>Draft message <span class="fwtag">Cambridge</span></h3>
       <p>Dear Parent/Guardian,</p>
-      <p>I wanted to share a quick update regarding ${name} in ${s}. ${t}.</p>
-      <p>In class, ${name} has been engaging with our current work, and I'm pleased to keep you informed of their progress. To build on this, a helpful next step at home would be a short, supportive conversation about what they are enjoying and finding tricky.</p>
-      <p>Please do reach out if you'd like to discuss anything further — I'm always happy to talk.</p>
+      <p>I'm writing with an update on ${n}'s progress in ${s}. ${t}.</p>
+      <p>We are currently working within the Cambridge Lower Secondary framework, and ${n} is building the knowledge, application and analysis skills it develops. A supportive next step at home would be a brief chat about the key vocabulary we are using and how ${n} is finding the work.</p>
+      <p>Please do get in touch if you would like to discuss ${n}'s learning in more detail — I'm always glad to.</p>
       <p>Kind regards,<br>Mr Okoth<br>${s} Teacher</p>`;
     }
-  }
+  };
+
+  // ---------- IB MYP TEMPLATES ----------
+  const myp = {
+    lesson: (t,y,s,e) => `
+      <h3>Statement of Inquiry <span class="fwtag">IB MYP</span></h3>
+      <p>Through exploring ${t}, learners understand how [key concept] and [related concept] shape [global context]. <i>(Refine to your unit.)</i></p>
+      <h3>Key & Related Concepts</h3><ul>
+        <li><b>Key concept:</b> e.g. Systems / Change / Relationships (choose for ${t}).</li>
+        <li><b>Related concepts:</b> two subject-specific concepts tied to ${t}.</li>
+        <li><b>Global context:</b> e.g. Scientific & technical innovation.</li></ul>
+      <h3>Inquiry Questions</h3><ul>
+        <li><b>Factual:</b> What is ${t}?</li>
+        <li><b>Conceptual:</b> How does ${t} connect to wider systems?</li>
+        <li><b>Debatable:</b> Should we rely on ${t}? Why or why not?</li></ul>
+      <h3>ATL Skills</h3><p>Focus: <b>Thinking</b> (critical/creative) and <b>Communication</b> — applied through the ${t} task.</p>
+      <h3>Learning Experiences (${e||'one lesson'})</h3><ol>
+        <li><b>Provocation:</b> hook into the debatable question on ${t}.</li>
+        <li><b>Inquiry:</b> guided investigation; learners gather and process information.</li>
+        <li><b>Construction:</b> learners create or solve a problem using ${t} (design cycle where relevant).</li>
+        <li><b>Reflection:</b> learners self-assess against the relevant MYP criterion.</li></ol>
+      <h3>Assessment</h3><p>Formative task on ${t} mapped to MYP <b>Criterion</b> (A–D). State the strand and the level descriptor being targeted.</p>
+      <h3>Resources</h3><ul><li>Inquiry question display</li><li>${t} investigation materials</li><li>Criterion-referenced task sheet</li></ul>`,
+    quiz: (t,y,s,e) => `
+      <h3>${t} — Formative Check <span class="fwtag">IB MYP</span></h3>
+      <p class="meta">Mapped to MYP criteria · ${y}</p>
+      <h3>Criterion A — Knowing & Understanding</h3><ol>
+        <li>Outline what ${t} is. <i>(2)</i></li>
+        <li>Describe ${t} using subject vocabulary. <i>(2)</i></li></ol>
+      <h3>Criterion B/C — Inquiring & Processing</h3><ol start="3">
+        <li>Given data on ${t}, identify a pattern and explain it. <i>(3)</i></li>
+        <li>Suggest a method to investigate ${t} further. <i>(3)</i></li></ol>
+      <h3>Criterion D — Reflecting / Real-world impact</h3><ol start="5">
+        <li>Discuss one way ${t} affects people or the environment. <i>(4)</i></li>
+        <li>Evaluate a decision related to ${t}, considering different perspectives. <i>(4)</i></li></ol>
+      <h3>Markbands</h3><p>Convert to MYP 1–8 level descriptors per criterion. Add task-specific clarifications here.</p>`,
+    rubric: (t,y,s,e) => `<h3>MYP Criterion Rubric — ${t} <span class="fwtag">IB MYP</span></h3>
+      <p class="meta">Levels of achievement 1–8 · ${y}</p>
+      <table>
+      <tr><th>Level</th><th>Descriptor (adapt to your criterion & strands)</th></tr>
+      <tr><th>0</th><td>Does not reach a standard described below.</td></tr>
+      <tr><th>1–2 (Limited)</th><td>States limited knowledge of ${t}; minimal application; little reflection.</td></tr>
+      <tr><th>3–4 (Adequate)</th><td>Describes ${t} with some accuracy; applies with guidance; begins to reflect.</td></tr>
+      <tr><th>5–6 (Substantial)</th><td>Explains ${t} accurately; applies independently; reflects with reasoning.</td></tr>
+      <tr><th>7–8 (Excellent)</th><td>Analyses ${t} in depth; applies to unfamiliar contexts; reflects critically with justification.</td></tr></table>
+      <p class="meta">How to use: select the criterion (A–D), match the work to the band using a "best-fit" judgement, and record the level with one targeted comment.</p>`,
+    differentiation: (t,y,s,e) => `
+      <h3>Differentiation Plan — ${t} <span class="fwtag">IB MYP</span></h3>
+      <h3>Support — EAL learners</h3><ul><li>Pre-teach concept vocabulary for ${t}; pair with visuals.</li><li>Provide inquiry-question stems and a writing frame for criterion responses.</li><li>Allow first-language thinking time before sharing.</li></ul>
+      <h3>Support — scaffolded (ATL building)</h3><ul><li>Model the ATL skill (e.g. organising information) explicitly for ${t}.</li><li>Offer a structured graphic organiser.</li><li>Break the criterion task into staged checkpoints.</li></ul>
+      <h3>Stretch — extended inquiry</h3><ul><li>Push toward the debatable inquiry question on ${t}.</li><li>Require evaluation of multiple perspectives (Criterion D).</li><li>Invite learners to design their own investigation.</li></ul>
+      <h3>For all</h3><ul><li>Share criterion descriptors in student-friendly language.</li><li>Build in structured reflection time.</li></ul>`,
+    parent: (t,y,s,e) => { const n = e || 'your child';
+      return `<h3>Draft message <span class="fwtag">IB MYP</span></h3>
+      <p>Dear Parent/Guardian,</p>
+      <p>I'd like to share an update on ${n}'s learning in ${s}. ${t}.</p>
+      <p>In our current MYP unit, ${n} is developing both subject understanding and Approaches to Learning skills such as thinking and communication. A valuable next step at home would be encouraging ${n} to reflect aloud on what they are inquiring into and the connections they are noticing.</p>
+      <p>I would warmly welcome a conversation if you'd like to know more about ${n}'s progress against the MYP criteria.</p>
+      <p>Kind regards,<br>Mr Okoth<br>${s} Teacher</p>`;
+    }
+  };
+
+  const engines = { cambridge, myp };
 
   document.getElementById('go').onclick = () => {
     const topic = document.getElementById('topic').value.trim();
@@ -223,10 +327,11 @@
     const extra = document.getElementById('extra').value.trim();
     const out = document.getElementById('out');
     const titles = { lesson: 'Lesson Plan', quiz: 'Quiz', rubric: 'Rubric', differentiation: 'Differentiation Plan', parent: 'Parent Message' };
+    const body = engines[fw][mode](topic, year, subject, extra);
     out.className = 'out show';
     out.innerHTML = `<h2>${titles[mode]}</h2><p class="meta">${topic} · ${year} · ${subject}</p>
       <p class="editnote">✎ Tip: click any text below to edit it before you copy or print.</p>
-      <div contenteditable="true" id="editable">${gen(mode, topic, year, subject, extra)}</div>
+      <div contenteditable="true" id="editable">${body}</div>
       <div class="actions">
         <button class="btn2" id="copyBtn">Copy text</button>
         <button class="btn2" onclick="window.print()">Print / Save as PDF</button>
