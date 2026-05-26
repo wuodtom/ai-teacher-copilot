@@ -4,101 +4,64 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AI Teacher Copilot — Plan less, teach more</title>
-<meta name="description" content="Generate lesson plans, quizzes, rubrics, differentiation, and parent messages in minutes. Cambridge & IB MYP aligned.">
+<meta name="description" content="Generate framework-aligned lesson plans, quizzes, rubrics, differentiation, and parent messages in minutes. Cambridge & IB MYP.">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Newsreader:wght@400;500;600&display=swap');
-
   :root {
-    --ink: #1a1d29; --ink-soft: #4a4f5e; --paper: #f4f1ea; --card: #fffdf8;
-    --line: #ddd6c8; --accent: #c2410c; --accent-soft: #fff1e9; --teal: #0f5e5e;
-    --shadow: 0 1px 2px rgba(26,29,41,.04), 0 8px 28px rgba(26,29,41,.08);
+    --ink:#1a1d29; --ink-soft:#4a4f5e; --paper:#f4f1ea; --card:#fffdf8;
+    --line:#ddd6c8; --accent:#c2410c; --accent-soft:#fff1e9; --teal:#0f5e5e;
+    --shadow:0 1px 2px rgba(26,29,41,.04),0 8px 28px rgba(26,29,41,.08);
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: 'Newsreader', Georgia, serif; background: var(--paper); color: var(--ink);
-    line-height: 1.6; min-height: 100vh;
-    background-image: radial-gradient(circle at 12% 20%, rgba(194,65,12,.04), transparent 40%),
-      radial-gradient(circle at 88% 75%, rgba(15,94,94,.04), transparent 40%);
-  }
-  .wrap { max-width: 920px; margin: 0 auto; padding: 48px 24px 80px; }
-  header { margin-bottom: 30px; border-bottom: 2px solid var(--ink); padding-bottom: 24px; }
-  .badge {
-    display: inline-block; font-family: 'Fraunces', serif; font-size: 11px; letter-spacing: .18em;
-    text-transform: uppercase; color: var(--accent); border: 1px solid var(--accent);
-    border-radius: 100px; padding: 4px 12px; margin-bottom: 16px;
-  }
-  h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: clamp(34px, 6vw, 52px); line-height: 1.05; letter-spacing: -.02em; }
-  h1 em { font-style: italic; color: var(--accent); }
-  .sub { font-size: 18px; color: var(--ink-soft); margin-top: 12px; max-width: 580px; }
-
-  .framework { display: flex; align-items: center; gap: 12px; margin: 24px 0 4px; flex-wrap: wrap; }
-  .framework .flabel { font-family: 'Fraunces', serif; font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft); }
-  .seg { display: inline-flex; border: 1px solid var(--ink); border-radius: 100px; overflow: hidden; }
-  .seg button {
-    font-family: 'Fraunces', serif; font-size: 13px; font-weight: 500; padding: 7px 18px;
-    border: none; background: var(--card); color: var(--ink-soft); cursor: pointer; transition: all .15s;
-  }
-  .seg button.on { background: var(--teal); color: #fff; }
-
-  .tabs { display: flex; gap: 4px; margin: 24px 0 28px; flex-wrap: wrap; }
-  .tab {
-    font-family: 'Fraunces', serif; font-size: 14px; font-weight: 500; padding: 8px 16px;
-    border: 1px solid var(--line); background: var(--card); border-radius: 100px; cursor: pointer;
-    transition: all .18s ease; color: var(--ink-soft);
-  }
-  .tab:hover { border-color: var(--ink); color: var(--ink); }
-  .tab.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
-  .panel { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 28px; box-shadow: var(--shadow); }
-  .field { margin-bottom: 20px; }
-  label {
-    display: block; font-family: 'Fraunces', serif; font-size: 13px; font-weight: 600;
-    letter-spacing: .04em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 8px;
-  }
-  input, select, textarea {
-    width: 100%; font-family: 'Newsreader', serif; font-size: 16px; padding: 11px 14px;
-    border: 1px solid var(--line); border-radius: 9px; background: #fff; color: var(--ink); transition: border-color .15s;
-  }
-  input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
-  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  @media (max-width: 560px) { .row { grid-template-columns: 1fr; } }
-  .go {
-    font-family: 'Fraunces', serif; font-size: 16px; font-weight: 600; background: var(--accent);
-    color: #fff; border: none; border-radius: 9px; padding: 13px 28px; cursor: pointer; margin-top: 4px;
-    transition: transform .12s, background .15s;
-  }
-  .go:hover { background: #9a330a; transform: translateY(-1px); }
-  .out {
-    margin-top: 28px; background: var(--card); border: 1px solid var(--line); border-radius: 14px;
-    padding: 32px; box-shadow: var(--shadow); display: none;
-  }
-  .out.show { display: block; animation: rise .4s ease; }
-  @keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
-  .out h2 { font-family: 'Fraunces', serif; font-size: 26px; font-weight: 600; margin-bottom: 4px; }
-  .out h3 {
-    font-family: 'Fraunces', serif; font-size: 16px; font-weight: 600; color: var(--teal);
-    margin: 22px 0 8px; letter-spacing: .02em; border-bottom: 1px solid var(--line); padding-bottom: 6px;
-  }
-  .out p, .out li, .out td, .out th { font-size: 16px; color: var(--ink); }
-  .out ul, .out ol { margin: 6px 0 6px 22px; }
-  .out li { margin-bottom: 5px; }
-  .meta { color: var(--ink-soft); font-size: 14px; font-style: italic; margin-bottom: 8px; }
-  .fwtag { display:inline-block; font-family:'Fraunces',serif; font-size:11px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:#fff; background:var(--teal); border-radius:100px; padding:2px 10px; margin-left:6px; vertical-align:middle; }
-  .out table { width: 100%; border-collapse: collapse; margin: 10px 0; }
-  .out th, .out td { border: 1px solid var(--line); padding: 8px 10px; text-align: left; vertical-align: top; }
-  .out th { background: var(--accent-soft); font-family: 'Fraunces', serif; font-size: 13px; }
-  .editnote { font-size: 13px; color: var(--ink-soft); font-style: italic; margin-bottom: 14px; }
-  .actions { margin-top: 20px; display: flex; gap: 8px; flex-wrap: wrap; }
-  .btn2 {
-    font-family: 'Fraunces', serif; font-size: 13px; font-weight: 500; background: transparent;
-    border: 1px solid var(--line); color: var(--ink-soft); border-radius: 7px; padding: 7px 16px; cursor: pointer;
-  }
-  .btn2:hover { border-color: var(--ink); color: var(--ink); }
-  footer { margin-top: 48px; text-align: center; color: var(--ink-soft); font-size: 13px; font-style: italic; }
-  @media print {
-    body { background: #fff; } .wrap { padding: 0; max-width: 100%; }
-    header, .tabs, .panel, footer, .actions, .framework { display: none !important; }
-    .out { box-shadow: none; border: none; margin: 0; padding: 0; display: block !important; }
-  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Newsreader',Georgia,serif;background:var(--paper);color:var(--ink);line-height:1.6;min-height:100vh;
+    background-image:radial-gradient(circle at 12% 20%,rgba(194,65,12,.04),transparent 40%),radial-gradient(circle at 88% 75%,rgba(15,94,94,.04),transparent 40%);}
+  .wrap{max-width:920px;margin:0 auto;padding:48px 24px 80px;}
+  header{margin-bottom:30px;border-bottom:2px solid var(--ink);padding-bottom:24px;}
+  .badge{display:inline-block;font-family:'Fraunces',serif;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);border:1px solid var(--accent);border-radius:100px;padding:4px 12px;margin-bottom:16px;}
+  h1{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(34px,6vw,52px);line-height:1.05;letter-spacing:-.02em;}
+  h1 em{font-style:italic;color:var(--accent);}
+  .sub{font-size:18px;color:var(--ink-soft);margin-top:12px;max-width:580px;}
+  .framework{display:flex;align-items:center;gap:12px;margin:24px 0 4px;flex-wrap:wrap;}
+  .framework .flabel{font-family:'Fraunces',serif;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);}
+  .seg{display:inline-flex;border:1px solid var(--ink);border-radius:100px;overflow:hidden;}
+  .seg button{font-family:'Fraunces',serif;font-size:13px;font-weight:500;padding:7px 18px;border:none;background:var(--card);color:var(--ink-soft);cursor:pointer;transition:all .15s;}
+  .seg button.on{background:var(--teal);color:#fff;}
+  .tabs{display:flex;gap:4px;margin:24px 0 28px;flex-wrap:wrap;}
+  .tab{font-family:'Fraunces',serif;font-size:14px;font-weight:500;padding:8px 16px;border:1px solid var(--line);background:var(--card);border-radius:100px;cursor:pointer;transition:all .18s ease;color:var(--ink-soft);}
+  .tab:hover{border-color:var(--ink);color:var(--ink);}
+  .tab.active{background:var(--ink);color:var(--paper);border-color:var(--ink);}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:28px;box-shadow:var(--shadow);}
+  .field{margin-bottom:20px;}
+  label{display:block;font-family:'Fraunces',serif;font-size:13px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:8px;}
+  label .opt{font-weight:400;text-transform:none;letter-spacing:0;font-style:italic;color:var(--ink-soft);font-size:12px;}
+  input,select,textarea{width:100%;font-family:'Newsreader',serif;font-size:16px;padding:11px 14px;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink);transition:border-color .15s;}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
+  textarea{resize:vertical;min-height:54px;}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  @media (max-width:560px){.row{grid-template-columns:1fr;}}
+  .secnote{font-family:'Fraunces',serif;font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);margin:4px 0 12px;}
+  .go{font-family:'Fraunces',serif;font-size:16px;font-weight:600;background:var(--accent);color:#fff;border:none;border-radius:9px;padding:13px 28px;cursor:pointer;margin-top:4px;transition:transform .12s,background .15s;}
+  .go:hover{background:#9a330a;transform:translateY(-1px);}
+  .out{margin-top:28px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:32px;box-shadow:var(--shadow);display:none;}
+  .out.show{display:block;animation:rise .4s ease;}
+  @keyframes rise{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+  .out h2{font-family:'Fraunces',serif;font-size:26px;font-weight:600;margin-bottom:4px;}
+  .out h3{font-family:'Fraunces',serif;font-size:16px;font-weight:600;color:var(--teal);margin:22px 0 8px;letter-spacing:.02em;border-bottom:1px solid var(--line);padding-bottom:6px;}
+  .out p,.out li,.out td,.out th{font-size:16px;color:var(--ink);}
+  .out ul,.out ol{margin:6px 0 6px 22px;}
+  .out li{margin-bottom:5px;}
+  .meta{color:var(--ink-soft);font-size:14px;font-style:italic;margin-bottom:8px;}
+  .fwtag{display:inline-block;font-family:'Fraunces',serif;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#fff;background:var(--teal);border-radius:100px;padding:2px 10px;margin-left:6px;vertical-align:middle;}
+  .out table{width:100%;border-collapse:collapse;margin:10px 0;}
+  .out th,.out td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top;}
+  .out th{background:var(--accent-soft);font-family:'Fraunces',serif;font-size:13px;}
+  .editnote{font-size:13px;color:var(--ink-soft);font-style:italic;margin-bottom:14px;}
+  .actions{margin-top:20px;display:flex;gap:8px;flex-wrap:wrap;}
+  .btn2{font-family:'Fraunces',serif;font-size:13px;font-weight:500;background:transparent;border:1px solid var(--line);color:var(--ink-soft);border-radius:7px;padding:7px 16px;cursor:pointer;}
+  .btn2:hover{border-color:var(--ink);color:var(--ink);}
+  .btn2.primary{background:var(--teal);color:#fff;border-color:var(--teal);}
+  footer{margin-top:48px;text-align:center;color:var(--ink-soft);font-size:13px;font-style:italic;}
+  @media print{body{background:#fff;}.wrap{padding:0;max-width:100%;}header,.tabs,.panel,footer,.actions,.framework{display:none!important;}.out{box-shadow:none;border:none;margin:0;padding:0;display:block!important;}}
 </style>
 </head>
 <body>
@@ -125,9 +88,10 @@
   </div>
 
   <div class="panel">
+    <p class="secnote" id="modeNote">Lesson Plan details</p>
     <div class="field">
       <label id="topicLabel">Topic / Learning Focus</label>
-      <input id="topic" placeholder="e.g. Forces and motion">
+      <input id="topic" placeholder="e.g. Photosynthesis">
     </div>
     <div class="row">
       <div class="field">
@@ -135,17 +99,50 @@
         <select id="year"></select>
       </div>
       <div class="field">
-        <label>Subject</label>
+        <label id="stageLabel">Stage / Subject</label>
         <select id="subject">
           <option selected>Science</option><option>STEM / Engineering</option>
-          <option>Mathematics</option><option>English</option><option>Other</option>
+          <option>Mathematics</option><option>English</option>
+          <option>Humanities</option><option>Languages</option>
+          <option>Arts</option><option>PE / Health</option><option>Other</option>
         </select>
       </div>
     </div>
-    <div class="field">
-      <label id="extraLabel">Lesson length / notes (optional)</label>
-      <input id="extra" placeholder="e.g. 50 minutes, mixed ability">
+
+    <!-- Framework-specific row -->
+    <div class="row" id="fwRow">
+      <div class="field" id="cambStageField">
+        <label>Cambridge Stage</label>
+        <select id="cambStage">
+          <option>Primary</option><option selected>Lower Secondary</option>
+          <option>IGCSE</option><option>A-Level</option>
+        </select>
+      </div>
+      <div class="field" id="mypConceptField" style="display:none;">
+        <label>Key Concept <span class="opt">(optional)</span></label>
+        <input id="mypConcept" placeholder="e.g. Systems, Change, Relationships">
+      </div>
+      <div class="field" id="mypContextField" style="display:none;">
+        <label>Global Context <span class="opt">(optional)</span></label>
+        <input id="mypContext" placeholder="e.g. Scientific & technical innovation">
+      </div>
     </div>
+
+    <!-- Mode-specific dynamic fields -->
+    <div id="dynamic"></div>
+
+    <!-- Shared context (the reviewer's "separate context from topic") -->
+    <div class="row" id="contextRow">
+      <div class="field">
+        <label>Prior knowledge <span class="opt">(optional)</span></label>
+        <textarea id="prior" placeholder="They already know… they struggle with…"></textarea>
+      </div>
+      <div class="field">
+        <label>Resources available <span class="opt">(optional)</span></label>
+        <textarea id="resources" placeholder="e.g. laptops, lab equipment, paper only"></textarea>
+      </div>
+    </div>
+
     <button class="go" id="go">Generate</button>
   </div>
 
@@ -155,193 +152,226 @@
 </div>
 
 <script>
-  let mode = 'lesson';
-  let fw = 'cambridge';
-
-  const yearSets = {
-    cambridge: ['Year 4','Year 5','Year 6','Year 7','Year 8','Year 9'],
-    myp: ['MYP 1 (Yr 7)','MYP 2 (Yr 8)','MYP 3 (Yr 9)','MYP 4 (Yr 10)','MYP 5 (Yr 11)']
+  let mode='lesson', fw='cambridge';
+  const yearSets={
+    cambridge:['Year 4','Year 5','Year 6','Year 7','Year 8','Year 9'],
+    myp:['MYP 1 (Yr 7)','MYP 2 (Yr 8)','MYP 3 (Yr 9)','MYP 4 (Yr 10)','MYP 5 (Yr 11)']
   };
-  function fillYears() {
-    const sel = document.getElementById('year');
-    sel.innerHTML = yearSets[fw].map((y,i) => `<option ${i===3&&fw==='cambridge'?'selected':''} ${i===0&&fw==='myp'?'selected':''}>${y}</option>`).join('');
+  function fillYears(){
+    const sel=document.getElementById('year');
+    sel.innerHTML=yearSets[fw].map((y,i)=>`<option ${i===3&&fw==='cambridge'?'selected':''} ${i===0&&fw==='myp'?'selected':''}>${y}</option>`).join('');
   }
   fillYears();
 
-  const labels = {
-    lesson: { topic: 'Topic / Learning Focus', extra: 'Lesson length / notes (optional)', ph: 'e.g. Forces and motion' },
-    quiz: { topic: 'Quiz Topic', extra: 'Notes (optional)', ph: 'e.g. The water cycle' },
-    rubric: { topic: 'Task being assessed', extra: 'Total marks (optional)', ph: 'e.g. Design-and-build project' },
-    differentiation: { topic: 'Lesson / activity', extra: 'Notes (optional)', ph: 'e.g. Investigating photosynthesis' },
-    parent: { topic: 'Subject of message', extra: 'Student first name (optional)', ph: 'e.g. Strong improvement this term' }
+  const topicLabels={
+    lesson:'Topic / Learning Focus', quiz:'Quiz Topic', rubric:'Task being assessed',
+    differentiation:'Lesson / activity', parent:'Subject of message'
   };
+  const topicPh={
+    lesson:'e.g. Photosynthesis', quiz:'e.g. The water cycle', rubric:'e.g. Design-and-build project',
+    differentiation:'e.g. Investigating photosynthesis', parent:'e.g. Strong improvement this term'
+  };
+  const modeNotes={lesson:'Lesson Plan details',quiz:'Quiz details',rubric:'Rubric details',differentiation:'Differentiation details',parent:'Parent Message details'};
 
-  document.getElementById('seg').querySelectorAll('button').forEach(b => {
-    b.onclick = () => {
-      document.getElementById('seg').querySelectorAll('button').forEach(x => x.classList.remove('on'));
-      b.classList.add('on'); fw = b.dataset.fw; fillYears();
-      document.getElementById('yearLabel').textContent = fw === 'myp' ? 'MYP Year' : 'Year Group';
+  // Mode-specific dynamic input fields (the reviewer's "tab disconnect" fix)
+  function dynamicFields(){
+    if(mode==='quiz') return `<div class="row">
+      <div class="field"><label>Number of questions</label><select id="qnum"><option>4</option><option selected>6</option><option>8</option><option>10</option></select></div>
+      <div class="field"><label>Question style</label><select id="qstyle"><option selected>Mixed</option><option>Multiple choice</option><option>Short answer</option><option>Extended response</option></select></div></div>`;
+    if(mode==='rubric') return `<div class="row">
+      <div class="field"><label>Total marks <span class="opt">(optional)</span></label><input id="marks" placeholder="e.g. 20"></div>
+      <div class="field"><label>Lesson length <span class="opt">(optional)</span></label><input id="len" placeholder="e.g. 50 minutes"></div></div>`;
+    if(mode==='lesson') return `<div class="field"><label>Lesson length <span class="opt">(optional)</span></label><input id="len" placeholder="e.g. 50 minutes"></div>`;
+    if(mode==='differentiation') return `<div class="field"><label>Which learners to focus on? <span class="opt">(optional)</span></label><input id="learners" placeholder="e.g. EAL newcomers, two SEN, three high-ability"></div>`;
+    if(mode==='parent') return `<div class="row">
+      <div class="field"><label>Student first name <span class="opt">(optional)</span></label><input id="sname" placeholder="e.g. Amira"></div>
+      <div class="field"><label>Tone</label><select id="tone"><option selected>Warm & positive</option><option>Warm but raising a concern</option><option>Formal</option></select></div></div>`;
+    return '';
+  }
+  function renderDynamic(){ document.getElementById('dynamic').innerHTML=dynamicFields(); }
+  renderDynamic();
+
+  document.getElementById('seg').querySelectorAll('button').forEach(b=>{
+    b.onclick=()=>{
+      document.getElementById('seg').querySelectorAll('button').forEach(x=>x.classList.remove('on'));
+      b.classList.add('on'); fw=b.dataset.fw; fillYears();
+      document.getElementById('yearLabel').textContent=fw==='myp'?'MYP Year':'Year Group';
+      document.getElementById('cambStageField').style.display=fw==='cambridge'?'':'none';
+      document.getElementById('mypConceptField').style.display=fw==='myp'?'':'none';
+      document.getElementById('mypContextField').style.display=fw==='myp'?'':'none';
     };
   });
-  document.querySelectorAll('.tab').forEach(t => {
-    t.onclick = () => {
-      document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
-      t.classList.add('active'); mode = t.dataset.mode;
-      document.getElementById('topicLabel').textContent = labels[mode].topic;
-      document.getElementById('extraLabel').textContent = labels[mode].extra;
-      document.getElementById('topic').placeholder = labels[mode].ph;
+  document.querySelectorAll('.tab').forEach(t=>{
+    t.onclick=()=>{
+      document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+      t.classList.add('active'); mode=t.dataset.mode;
+      document.getElementById('topicLabel').textContent=topicLabels[mode];
+      document.getElementById('topic').placeholder=topicPh[mode];
+      document.getElementById('modeNote').textContent=modeNotes[mode];
+      renderDynamic();
     };
   });
 
-  // ---------- CAMBRIDGE TEMPLATES ----------
-  const cambridge = {
-    lesson: (t,y,s,e) => `
-      <h3>Learning Objectives <span class="fwtag">Cambridge</span></h3>
+  const val=id=>{const el=document.getElementById(id);return el?el.value.trim():'';};
+  function ctxLine(){
+    const p=val('prior'), r=val('resources'); let out='';
+    if(p) out+=`<p class="meta">Prior knowledge: ${p}</p>`;
+    if(r) out+=`<p class="meta">Resources: ${r}</p>`;
+    return out;
+  }
+
+  // ---------- CAMBRIDGE ----------
+  const cambridge={
+    lesson:(t,y,s)=>{const len=val('len')||'40 min';const stage=val('cambStage');return `
+      <h3>Learning Objectives <span class="fwtag">Cambridge · ${stage}</span></h3>
       <p>By the end of this lesson, learners will be able to:</p><ul>
         <li><b>State / describe</b> the key features of ${t}.</li>
         <li><b>Explain</b> how and why ${t} works, using correct ${s} terminology.</li>
         <li><b>Apply / analyse</b> ${t} in an unfamiliar context.</li></ul>
+      ${ctxLine()}
       <h3>Success Criteria</h3><ul>
         <li>I can <b>define</b> ${t} accurately.</li>
         <li>I can <b>explain</b> it using subject-specific vocabulary.</li>
         <li>I can <b>apply</b> it to a new problem and justify my reasoning.</li></ul>
-      <h3>Starter / Retrieval (5 min)</h3><p>Low-stakes retrieval question linking prior learning to ${t}. Pose a Cambridge-style command-word question ("<i>Describe…</i>", "<i>Suggest…</i>") and take quick responses.</p>
-      <h3>Main Activity (${e||'40 min'})</h3><ol>
-        <li><b>Teacher input:</b> model the core idea of ${t} with a worked example and clear use of command words.</li>
-        <li><b>Guided practice:</b> learners attempt a scaffolded task; check for misconceptions.</li>
-        <li><b>Independent / applied task:</b> learners tackle an exam-style question on ${t} (Engineering Design Process: Ask · Imagine · Plan · Create · Improve where practical).</li>
-        <li><b>Feedback:</b> peer- or self-mark against the success criteria.</li></ol>
-      <h3>Plenary (5 min)</h3><p>Exit ticket using a Cambridge command word: "<i>Explain one way ${t} is used in real life.</i>" Identify any misconception to revisit next lesson.</p>
-      <h3>Key Vocabulary</h3><p>4–6 tier-3 terms for ${t}. Pre-teach, display, and require their use in answers.</p>
-      <h3>Assessment & Next Steps</h3><p>Links to Cambridge Lower Secondary ${s} framework. Note progress toward Checkpoint-style questioning; flag learners for stretch or support next lesson.</p>
-      <h3>Resources</h3><ul><li>Command-word display</li><li>Scaffolded + exam-style worksheet on ${t}</li><li>Equipment for the applied task</li></ul>`,
-    quiz: (t,y,s,e) => `
-      <h3>${t} — Progress Check <span class="fwtag">Cambridge</span></h3>
-      <p class="meta">Command-word questions, ramped by demand. ${y}.</p>
+      <h3>Starter / Retrieval (5 min)</h3><p>Low-stakes retrieval linking prior learning to ${t}. Use a Cambridge command word ("<i>Describe…</i>", "<i>Suggest…</i>").</p>
+      <h3>Main Activity (${len})</h3><ol>
+        <li><b>Teacher input:</b> model ${t} with a worked example and clear command-word use.</li>
+        <li><b>Guided practice:</b> scaffolded task; check misconceptions.</li>
+        <li><b>Independent / applied:</b> exam-style question on ${t}${s.indexOf('STEM')>-1?' (Engineering Design Process: Ask · Imagine · Plan · Create · Improve)':''}.</li>
+        <li><b>Feedback:</b> peer/self-mark against success criteria.</li></ol>
+      <h3>Plenary (5 min)</h3><p>Exit ticket: "<i>Explain one way ${t} is used in real life.</i>" Note misconceptions for next lesson.</p>
+      <h3>Key Vocabulary</h3><p>4–6 tier-3 terms for ${t}. Pre-teach, display, require in answers.</p>
+      <h3>Assessment & Next Steps</h3><p>Aligned to Cambridge ${stage} ${s}. Note progress toward ${stage==='IGCSE'?'IGCSE exam-style':'Checkpoint-style'} questioning.</p>
+      <h3>Resources</h3><ul><li>Command-word display</li><li>Scaffolded + exam-style worksheet</li>${val('resources')?`<li>Available: ${val('resources')}</li>`:'<li>Equipment for the applied task</li>'}</ul>`;},
+    quiz:(t,y,s)=>{const n=val('qnum')||'6';const style=val('qstyle')||'Mixed';const stage=val('cambStage');return `
+      <h3>${t} — Progress Check <span class="fwtag">Cambridge · ${stage}</span></h3>
+      <p class="meta">${n} questions · ${style} · command-word demand · ${y}</p>${ctxLine()}
       <h3>Section A — Recall & Understanding</h3><ol>
         <li><b>State</b> what is meant by ${t}. <i>(1)</i></li>
         <li><b>Describe</b> one key feature of ${t}. <i>(2)</i></li>
         <li><b>Identify</b> the correct option about ${t}: A / B / C / D. <i>(1)</i></li></ol>
       <h3>Section B — Application</h3><ol start="4">
         <li><b>Explain</b> why ${t} behaves as it does. <i>(3)</i></li>
-        <li><b>Suggest</b> what would happen if a key variable changed. <i>(2)</i></li></ol>
+        <li><b>Suggest</b> what happens if a key variable changes. <i>(2)</i></li></ol>
       <h3>Section C — Analysis</h3><ol start="6">
-        <li><b>Compare</b> ${t} with a related idea — one similarity, one difference. <i>(2)</i></li>
-        <li><b>Apply</b> ${t} to this scenario: [insert]. Show your reasoning. <i>(4)</i></li></ol>
-      <h3>Mark Scheme</h3><p>Add model points here. Total: 15 marks. Use Cambridge command-word criteria (state = recall; explain = reasoned cause; suggest = applied prediction).</p>`,
-    rubric: (t,y,s,e) => {
-      const m = e || '20';
-      return `<h3>Assessment Rubric — ${t} <span class="fwtag">Cambridge</span></h3>
-      <p class="meta">Aligned to Cambridge assessment objectives · ${m} marks · ${y}</p>
+        <li><b>Compare</b> ${t} with a related idea. <i>(2)</i></li>
+        <li><b>Apply</b> ${t} to: [insert scenario]. Show reasoning. <i>(4)</i></li></ol>
+      <h3>Mark Scheme</h3><p>Add model points. Total ~15 marks. Cambridge criteria: state = recall; explain = reasoned cause; suggest = applied prediction.</p>`;},
+    rubric:(t,y,s)=>{const m=val('marks')||'20';const stage=val('cambStage');return `<h3>Assessment Rubric — ${t} <span class="fwtag">Cambridge · ${stage}</span></h3>
+      <p class="meta">Aligned to Cambridge assessment objectives · ${m} marks · ${y}</p>${ctxLine()}
       <table>
       <tr><th>Assessment Objective</th><th>Beginning</th><th>Developing</th><th>Secure</th><th>Excelling</th></tr>
       <tr><th>AO1 Knowledge & Understanding</th><td>Recalls little.</td><td>Some accurate recall.</td><td>Accurate, relevant knowledge.</td><td>Thorough, precise knowledge.</td></tr>
       <tr><th>AO2 Application</th><td>Rarely applies.</td><td>Applies with support.</td><td>Applies independently.</td><td>Applies fluently to unfamiliar contexts.</td></tr>
-      <tr><th>AO3 Analysis & Evaluation</th><td>Describes only.</td><td>Begins to analyse.</td><td>Analyses with evidence.</td><td>Evaluates and justifies conclusions.</td></tr>
-      <tr><th>Communication</th><td>Unclear; little vocabulary.</td><td>Some subject vocabulary.</td><td>Clear, correct vocabulary.</td><td>Precise, well-structured.</td></tr></table>
-      <p class="meta">How to use: judge each AO, convert to marks out of ${m}, give one strength and one Cambridge-style improvement target.</p>`;
-    },
-    differentiation: (t,y,s,e) => `
+      <tr><th>AO3 Analysis & Evaluation</th><td>Describes only.</td><td>Begins to analyse.</td><td>Analyses with evidence.</td><td>Evaluates and justifies.</td></tr>
+      <tr><th>Communication</th><td>Unclear.</td><td>Some vocabulary.</td><td>Clear, correct vocabulary.</td><td>Precise, well-structured.</td></tr></table>
+      <p class="meta">Judge each AO, convert to marks out of ${m}, give one strength + one improvement target.</p>`;},
+    differentiation:(t,y,s)=>{const L=val('learners');return `
       <h3>Differentiation Plan — ${t} <span class="fwtag">Cambridge</span></h3>
-      <h3>Support — EAL learners</h3><ul><li>Pre-teach command words and tier-3 vocabulary for ${t} with visuals.</li><li>Provide sentence stems matched to command words ("This happens because…").</li><li>Allow oral rehearsal before written answers.</li></ul>
-      <h3>Support — SEN / scaffolded</h3><ul><li>Chunk the ${t} task with a step checklist.</li><li>Give a partially worked exam-style example.</li><li>Reduce volume, keep the demand (still target AO2/AO3).</li></ul>
-      <h3>Stretch — greater depth</h3><ul><li>Raise the command word (from <i>describe</i> to <i>evaluate</i>) on ${t}.</li><li>Add an unfamiliar-context application question.</li><li>Ask learners to write and mark their own exam question.</li></ul>
-      <h3>For all</h3><ul><li>Share success criteria up front.</li><li>Use mini-whiteboards for live misconception checks.</li></ul>`,
-    parent: (t,y,s,e) => { const n = e || 'your child';
+      ${L?`<p class="meta">Focus learners: ${L}</p>`:''}${ctxLine()}
+      <h3>Support — EAL learners</h3><ul><li>Pre-teach command words + tier-3 vocabulary for ${t} with visuals.</li><li>Sentence stems matched to command words.</li><li>Oral rehearsal before writing.</li></ul>
+      <h3>Support — SEN / scaffolded</h3><ul><li>Chunk the ${t} task with a step checklist.</li><li>Partially worked exam-style example.</li><li>Reduce volume, keep AO2/AO3 demand.</li></ul>
+      <h3>Stretch — greater depth</h3><ul><li>Raise the command word (<i>describe</i> → <i>evaluate</i>).</li><li>Unfamiliar-context application of ${t}.</li><li>Learners write and mark their own question.</li></ul>
+      <h3>For all</h3><ul><li>Share success criteria up front.</li><li>Mini-whiteboards for live misconception checks.</li></ul>`;},
+    parent:(t,y,s)=>{const n=val('sname')||'your child';const tone=val('tone')||'Warm & positive';
+      const mid=tone.indexOf('concern')>-1
+        ?`I wanted to share something for us to support together. ${t}. I'm confident that with a little focus we'll see ${n} back on track, and I'd value your partnership in this.`
+        :`I wanted to share some positive news. ${t}. It's been a pleasure to see, and I wanted you to hear it from me.`;
       return `<h3>Draft message <span class="fwtag">Cambridge</span></h3>
       <p>Dear Parent/Guardian,</p>
-      <p>I'm writing with an update on ${n}'s progress in ${s}. ${t}.</p>
-      <p>We are currently working within the Cambridge Lower Secondary framework, and ${n} is building the knowledge, application and analysis skills it develops. A supportive next step at home would be a brief chat about the key vocabulary we are using and how ${n} is finding the work.</p>
-      <p>Please do get in touch if you would like to discuss ${n}'s learning in more detail — I'm always glad to.</p>
-      <p>Kind regards,<br>Mr Okoth<br>${s} Teacher</p>`;
-    }
+      <p>I'm writing with an update on ${n}'s progress in ${s}. ${mid}</p>
+      <p>We're working within the Cambridge Lower Secondary framework, building knowledge, application and analysis. A supportive step at home would be a brief chat about the key vocabulary we're using and how ${n} is finding the work.</p>
+      <p>Please do get in touch if you'd like to discuss ${n}'s learning further — I'm always glad to.</p>
+      <p>Kind regards,<br>Mr Okoth<br>${s} Teacher</p>`;}
   };
 
-  // ---------- IB MYP TEMPLATES ----------
-  const myp = {
-    lesson: (t,y,s,e) => `
+  // ---------- IB MYP ----------
+  const myp={
+    lesson:(t,y,s)=>{const kc=val('mypConcept')||'[key concept]';const gc=val('mypContext')||'[global context]';return `
       <h3>Statement of Inquiry <span class="fwtag">IB MYP</span></h3>
-      <p>Through exploring ${t}, learners understand how [key concept] and [related concept] shape [global context]. <i>(Refine to your unit.)</i></p>
+      <p>Through exploring ${t}, learners understand how <b>${kc}</b> shapes <b>${gc}</b>. <i>(Refine to your unit.)</i></p>${ctxLine()}
       <h3>Key & Related Concepts</h3><ul>
-        <li><b>Key concept:</b> e.g. Systems / Change / Relationships (choose for ${t}).</li>
+        <li><b>Key concept:</b> ${kc}</li>
         <li><b>Related concepts:</b> two subject-specific concepts tied to ${t}.</li>
-        <li><b>Global context:</b> e.g. Scientific & technical innovation.</li></ul>
+        <li><b>Global context:</b> ${gc}</li></ul>
       <h3>Inquiry Questions</h3><ul>
         <li><b>Factual:</b> What is ${t}?</li>
-        <li><b>Conceptual:</b> How does ${t} connect to wider systems?</li>
+        <li><b>Conceptual:</b> How does ${t} connect to ${kc==='[key concept]'?'wider systems':kc.toLowerCase()}?</li>
         <li><b>Debatable:</b> Should we rely on ${t}? Why or why not?</li></ul>
-      <h3>ATL Skills</h3><p>Focus: <b>Thinking</b> (critical/creative) and <b>Communication</b> — applied through the ${t} task.</p>
-      <h3>Learning Experiences (${e||'one lesson'})</h3><ol>
+      <h3>ATL Skills</h3><p>Focus: <b>Thinking</b> (critical/creative) and <b>Communication</b>, applied through the ${t} task.</p>
+      <h3>Learning Experiences</h3><ol>
         <li><b>Provocation:</b> hook into the debatable question on ${t}.</li>
-        <li><b>Inquiry:</b> guided investigation; learners gather and process information.</li>
-        <li><b>Construction:</b> learners create or solve a problem using ${t} (design cycle where relevant).</li>
-        <li><b>Reflection:</b> learners self-assess against the relevant MYP criterion.</li></ol>
-      <h3>Assessment</h3><p>Formative task on ${t} mapped to MYP <b>Criterion</b> (A–D). State the strand and the level descriptor being targeted.</p>
-      <h3>Resources</h3><ul><li>Inquiry question display</li><li>${t} investigation materials</li><li>Criterion-referenced task sheet</li></ul>`,
-    quiz: (t,y,s,e) => `
+        <li><b>Inquiry:</b> guided investigation; gather and process information.</li>
+        <li><b>Construction:</b> create or solve a problem using ${t}${s.indexOf('STEM')>-1?' (design cycle)':''}.</li>
+        <li><b>Reflection:</b> self-assess against the relevant MYP criterion.</li></ol>
+      <h3>Assessment</h3><p>Formative task on ${t} mapped to MYP <b>Criterion</b> (A–D). State the strand and targeted level descriptor.</p>
+      <h3>Resources</h3><ul><li>Inquiry-question display</li>${val('resources')?`<li>Available: ${val('resources')}</li>`:'<li>Investigation materials</li>'}<li>Criterion-referenced task sheet</li></ul>`;},
+    quiz:(t,y,s)=>{const n=val('qnum')||'6';return `
       <h3>${t} — Formative Check <span class="fwtag">IB MYP</span></h3>
-      <p class="meta">Mapped to MYP criteria · ${y}</p>
+      <p class="meta">${n} questions · mapped to MYP criteria · ${y}</p>${ctxLine()}
       <h3>Criterion A — Knowing & Understanding</h3><ol>
         <li>Outline what ${t} is. <i>(2)</i></li>
         <li>Describe ${t} using subject vocabulary. <i>(2)</i></li></ol>
       <h3>Criterion B/C — Inquiring & Processing</h3><ol start="3">
         <li>Given data on ${t}, identify a pattern and explain it. <i>(3)</i></li>
         <li>Suggest a method to investigate ${t} further. <i>(3)</i></li></ol>
-      <h3>Criterion D — Reflecting / Real-world impact</h3><ol start="5">
+      <h3>Criterion D — Reflecting</h3><ol start="5">
         <li>Discuss one way ${t} affects people or the environment. <i>(4)</i></li>
-        <li>Evaluate a decision related to ${t}, considering different perspectives. <i>(4)</i></li></ol>
-      <h3>Markbands</h3><p>Convert to MYP 1–8 level descriptors per criterion. Add task-specific clarifications here.</p>`,
-    rubric: (t,y,s,e) => `<h3>MYP Criterion Rubric — ${t} <span class="fwtag">IB MYP</span></h3>
-      <p class="meta">Levels of achievement 1–8 · ${y}</p>
+        <li>Evaluate a decision related to ${t}, weighing perspectives. <i>(4)</i></li></ol>
+      <h3>Markbands</h3><p>Convert to MYP 1–8 level descriptors per criterion.</p>`;},
+    rubric:(t,y,s)=>`<h3>MYP Criterion Rubric — ${t} <span class="fwtag">IB MYP</span></h3>
+      <p class="meta">Levels of achievement 1–8 · ${y}</p>${ctxLine()}
       <table>
       <tr><th>Level</th><th>Descriptor (adapt to your criterion & strands)</th></tr>
       <tr><th>0</th><td>Does not reach a standard described below.</td></tr>
       <tr><th>1–2 (Limited)</th><td>States limited knowledge of ${t}; minimal application; little reflection.</td></tr>
       <tr><th>3–4 (Adequate)</th><td>Describes ${t} with some accuracy; applies with guidance; begins to reflect.</td></tr>
       <tr><th>5–6 (Substantial)</th><td>Explains ${t} accurately; applies independently; reflects with reasoning.</td></tr>
-      <tr><th>7–8 (Excellent)</th><td>Analyses ${t} in depth; applies to unfamiliar contexts; reflects critically with justification.</td></tr></table>
-      <p class="meta">How to use: select the criterion (A–D), match the work to the band using a "best-fit" judgement, and record the level with one targeted comment.</p>`,
-    differentiation: (t,y,s,e) => `
+      <tr><th>7–8 (Excellent)</th><td>Analyses ${t} in depth; applies to unfamiliar contexts; reflects critically.</td></tr></table>
+      <p class="meta">Select the criterion (A–D), apply a best-fit judgement, record the level with one targeted comment.</p>`,
+    differentiation:(t,y,s)=>{const L=val('learners');return `
       <h3>Differentiation Plan — ${t} <span class="fwtag">IB MYP</span></h3>
-      <h3>Support — EAL learners</h3><ul><li>Pre-teach concept vocabulary for ${t}; pair with visuals.</li><li>Provide inquiry-question stems and a writing frame for criterion responses.</li><li>Allow first-language thinking time before sharing.</li></ul>
-      <h3>Support — scaffolded (ATL building)</h3><ul><li>Model the ATL skill (e.g. organising information) explicitly for ${t}.</li><li>Offer a structured graphic organiser.</li><li>Break the criterion task into staged checkpoints.</li></ul>
-      <h3>Stretch — extended inquiry</h3><ul><li>Push toward the debatable inquiry question on ${t}.</li><li>Require evaluation of multiple perspectives (Criterion D).</li><li>Invite learners to design their own investigation.</li></ul>
-      <h3>For all</h3><ul><li>Share criterion descriptors in student-friendly language.</li><li>Build in structured reflection time.</li></ul>`,
-    parent: (t,y,s,e) => { const n = e || 'your child';
+      ${L?`<p class="meta">Focus learners: ${L}</p>`:''}${ctxLine()}
+      <h3>Support — EAL learners</h3><ul><li>Pre-teach concept vocabulary for ${t}; pair with visuals.</li><li>Inquiry-question stems + writing frame for criterion responses.</li><li>First-language thinking time.</li></ul>
+      <h3>Support — scaffolded (ATL building)</h3><ul><li>Model the ATL skill explicitly for ${t}.</li><li>Structured graphic organiser.</li><li>Stage the criterion task into checkpoints.</li></ul>
+      <h3>Stretch — extended inquiry</h3><ul><li>Push toward the debatable question on ${t}.</li><li>Evaluate multiple perspectives (Criterion D).</li><li>Design their own investigation.</li></ul>
+      <h3>For all</h3><ul><li>Criterion descriptors in student-friendly language.</li><li>Structured reflection time.</li></ul>`;},
+    parent:(t,y,s)=>{const n=val('sname')||'your child';const tone=val('tone')||'Warm & positive';
+      const mid=tone.indexOf('concern')>-1
+        ?`I wanted to share something we can support together. ${t}. With some focused effort I'm confident ${n} will progress well, and your partnership would help.`
+        :`I wanted to share some positive news. ${t}. It's been a real pleasure to see.`;
       return `<h3>Draft message <span class="fwtag">IB MYP</span></h3>
       <p>Dear Parent/Guardian,</p>
-      <p>I'd like to share an update on ${n}'s learning in ${s}. ${t}.</p>
-      <p>In our current MYP unit, ${n} is developing both subject understanding and Approaches to Learning skills such as thinking and communication. A valuable next step at home would be encouraging ${n} to reflect aloud on what they are inquiring into and the connections they are noticing.</p>
-      <p>I would warmly welcome a conversation if you'd like to know more about ${n}'s progress against the MYP criteria.</p>
-      <p>Kind regards,<br>Mr Okoth<br>${s} Teacher</p>`;
-    }
+      <p>I'd like to update you on ${n}'s learning in ${s}. ${mid}</p>
+      <p>In our current MYP unit, ${n} is developing subject understanding alongside Approaches to Learning skills such as thinking and communication. A valuable step at home would be encouraging ${n} to reflect aloud on what they're inquiring into.</p>
+      <p>I'd warmly welcome a conversation about ${n}'s progress against the MYP criteria.</p>
+      <p>Kind regards,<br>Mr Okoth<br>${s} Teacher</p>`;}
   };
 
-  const engines = { cambridge, myp };
+  const engines={cambridge,myp};
 
-  document.getElementById('go').onclick = () => {
-    const topic = document.getElementById('topic').value.trim();
-    if (!topic) { document.getElementById('topic').focus(); return; }
-    const year = document.getElementById('year').value;
-    const subject = document.getElementById('subject').value;
-    const extra = document.getElementById('extra').value.trim();
-    const out = document.getElementById('out');
-    const titles = { lesson: 'Lesson Plan', quiz: 'Quiz', rubric: 'Rubric', differentiation: 'Differentiation Plan', parent: 'Parent Message' };
-    const body = engines[fw][mode](topic, year, subject, extra);
-    out.className = 'out show';
-    out.innerHTML = `<h2>${titles[mode]}</h2><p class="meta">${topic} · ${year} · ${subject}</p>
+  document.getElementById('go').onclick=()=>{
+    const topic=val('topic');
+    if(!topic){document.getElementById('topic').focus();return;}
+    const year=document.getElementById('year').value;
+    const subject=document.getElementById('subject').value;
+    const out=document.getElementById('out');
+    const titles={lesson:'Lesson Plan',quiz:'Quiz',rubric:'Rubric',differentiation:'Differentiation Plan',parent:'Parent Message'};
+    const body=engines[fw][mode](topic,year,subject);
+    out.className='out show';
+    out.innerHTML=`<h2>${titles[mode]}</h2><p class="meta">${topic} · ${year} · ${subject}</p>
       <p class="editnote">✎ Tip: click any text below to edit it before you copy or print.</p>
       <div contenteditable="true" id="editable">${body}</div>
       <div class="actions">
+        <button class="btn2 primary" onclick="window.print()">Print / Save as PDF</button>
         <button class="btn2" id="copyBtn">Copy text</button>
-        <button class="btn2" onclick="window.print()">Print / Save as PDF</button>
       </div>`;
-    document.getElementById('copyBtn').onclick = () => {
+    document.getElementById('copyBtn').onclick=()=>{
       navigator.clipboard.writeText(document.getElementById('editable').innerText);
-      document.getElementById('copyBtn').textContent = 'Copied ✓';
-      setTimeout(() => document.getElementById('copyBtn').textContent = 'Copy text', 1500);
+      document.getElementById('copyBtn').textContent='Copied ✓';
+      setTimeout(()=>document.getElementById('copyBtn').textContent='Copy text',1500);
     };
-    out.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    out.scrollIntoView({behavior:'smooth',block:'start'});
   };
 </script>
 </body>
