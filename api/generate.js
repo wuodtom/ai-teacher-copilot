@@ -77,7 +77,7 @@ Be specific to this topic — not generic. Make it something I could actually us
       },
       body: JSON.stringify({
         model: 'claude-haiku-4-5',
-        max_tokens: 1500,
+        max_tokens: 2500,
         system: systemPrompt,
         messages: [{ role: 'user', content: userPrompt }]
       })
